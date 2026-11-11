@@ -617,6 +617,13 @@
         <div class="modal-content">
             <h3 id="tituloModalPedido">Criar Novo Pedido</h3>
             <input type="hidden" id="ordId">
+            
+            <!-- Campo de busca interativa para filtrar pacientes -->
+            <div class="form-group">
+                <label>Buscar Paciente por Nome ou CPF</label>
+                <input type="text" id="buscaPacienteInput" placeholder="Digite para filtrar..." oninput="filtrarPacientesSelect()">
+            </div>
+
             <div class="form-group">
                 <label>Selecione o Paciente</label>
                 <select id="ordPacienteSelect"></select>
@@ -701,6 +708,8 @@
 
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+        let listaPacientesCache = [];
+
         // ==========================================
         // CONTROLE DE ABAS E NAVEGAÇÃO
         // ==========================================
@@ -744,9 +753,11 @@
             const { data, error } = await supabaseClient.from('pacientes').select('*').order('created_at', { ascending: false });
             if (error) { console.error('Erro ao buscar pacientes:', error); return; }
 
+            listaPacientesCache = data || [];
+
             const tbody = document.getElementById('tabelaPacientes');
             tbody.innerHTML = '';
-            data.forEach(p => {
+            listaPacientesCache.forEach(p => {
                 const [ano, mes, dia] = p.data_nascimento ? p.data_nascimento.split('-') : ['', '', ''];
                 const nascFmt = dia ? `${dia}/${mes}/${ano}` : '-';
                 const tr = document.createElement('tr');
@@ -762,7 +773,7 @@
                 `;
                 tbody.appendChild(tr);
             });
-            document.getElementById('statPacientes').innerText = data.length;
+            document.getElementById('statPacientes').innerText = listaPacientesCache.length;
         }
 
         async function carregarProdutos() {
@@ -965,6 +976,47 @@
         }
 
         // ==========================================
+        // FILTRAGEM DINÂMICA DE PACIENTES NO SELECT
+        // ==========================================
+        async function preencherSelectPacientes(filtro = '') {
+            const selectPac = document.getElementById('ordPacienteSelect');
+            selectPac.innerHTML = '';
+
+            let pacientesFiltrados = listaPacientesCache;
+            if (filtro.trim() !== '') {
+                const termo = filtro.toLowerCase();
+                pacientesFiltrados = listaPacientesCache.filter(p => 
+                    p.nome_completo.toLowerCase().includes(termo) || p.cpf.includes(termo)
+                );
+            }
+
+            if (!pacientesFiltrados || pacientesFiltrados.length === 0) {
+                selectPac.innerHTML = '<option value="">Nenhum paciente encontrado</option>';
+                return;
+            }
+
+            for (const p of pacientesFiltrados) {
+                const nomeCompleto = `${p.nome_completo} (${p.cpf})`;
+                const opt = document.createElement('option');
+                opt.value = nomeCompleto;
+                
+                const temDebito = await pacienteTemDebitoPendente(nomeCompleto);
+                if (temDebito) {
+                    opt.innerText = `${p.nome_completo} - ${p.cpf} (⚠️ Débito em Aberto)`;
+                    opt.style.color = '#991b1b';
+                } else {
+                    opt.innerText = `${p.nome_completo} - ${p.cpf}`;
+                }
+                selectPac.appendChild(opt);
+            }
+        }
+
+        function filtrarPacientesSelect() {
+            const termo = document.getElementById('buscaPacienteInput').value;
+            preencherSelectPacientes(termo);
+        }
+
+        // ==========================================
         // CRUD DE PEDIDOS E BLOQUEIO DE INADIMPLÊNCIA
         // ==========================================
         function aoSelecionarProduto() {
@@ -1004,6 +1056,7 @@
         async function abrirModalPedido() {
             document.getElementById('tituloModalPedido').innerText = 'Criar Novo Pedido';
             document.getElementById('ordId').value = '';
+            document.getElementById('buscaPacienteInput').value = '';
             document.getElementById('blocoCartaoCredito').style.display = 'none';
             document.getElementById('ordFormaPagto').value = 'Pix';
             document.getElementById('ordParcelas').value = '1';
@@ -1011,27 +1064,9 @@
             document.getElementById('ordDataEnvio').value = '';
             document.getElementById('ordDataPagto').value = '';
             
-            const selectPac = document.getElementById('ordPacienteSelect');
-            selectPac.innerHTML = '';
             const { data: pacientes } = await supabaseClient.from('pacientes').select('*');
-            if (!pacientes || pacientes.length === 0) {
-                selectPac.innerHTML = '<option value="">Nenhum paciente cadastrado</option>';
-            } else {
-                for (const p of pacientes) {
-                    const nomeCompleto = `${p.nome_completo} (${p.cpf})`;
-                    const opt = document.createElement('option');
-                    opt.value = nomeCompleto;
-                    
-                    const temDebito = await pacienteTemDebitoPendente(nomeCompleto);
-                    if (temDebito) {
-                        opt.innerText = `${p.nome_completo} - ${p.cpf} (⚠️ Débito em Aberto)`;
-                        opt.style.color = '#991b1b';
-                    } else {
-                        opt.innerText = `${p.nome_completo} - ${p.cpf}`;
-                    }
-                    selectPac.appendChild(opt);
-                }
-            }
+            listaPacientesCache = pacientes || [];
+            await preencherSelectPacientes('');
 
             const selectProd = document.getElementById('ordProdutoSelect');
             selectProd.innerHTML = '';
@@ -1055,6 +1090,8 @@
             await abrirModalPedido();
             document.getElementById('tituloModalPedido').innerText = 'Editar Pedido';
             document.getElementById('ordId').value = id;
+            document.getElementById('buscaPacienteInput').value = paciente.split(' - ')[0]; // Preenche o campo de busca com o nome do paciente
+            await preencherSelectPacientes(paciente.split(' - ')[0]); // Filtra e seleciona corretamente
             document.getElementById('ordPacienteSelect').value = paciente;
             document.getElementById('ordProdutoSelect').value = produto;
 
