@@ -1,1 +1,6 @@
-Comandos
+git add .
+
+git commit -m "Atualizacao completa do painel admin com Supabase"
+
+git push -u origin main
+
