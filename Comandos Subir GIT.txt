@@ -1,0 +1,6 @@
+git add .
+
+git commit -m "Atualizando index.html correto na raiz do projeto"
+
+git push origin main
+
