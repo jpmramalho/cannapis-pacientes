@@ -15,7 +15,6 @@
             --text-muted: #6c757d;
             --white: #ffffff;
             --transition: all 0.3s ease;
-            --success: #2b9348;
         }
 
         * {
@@ -33,7 +32,6 @@
             flex-direction: column;
         }
 
-        /* Topbar / Navegação do Dashboard */
         header {
             background-color: var(--white);
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
@@ -92,7 +90,6 @@
             background-color: #fecaca;
         }
 
-        /* Container Principal do Dashboard */
         .dashboard-container {
             max-width: 1200px;
             margin: 3rem auto;
@@ -135,7 +132,6 @@
             display: inline-block;
         }
 
-        /* Grades de Seções */
         .dashboard-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
@@ -163,8 +159,50 @@
             gap: 0.5rem;
         }
 
+        /* Sistema de Abas (Filtros de Pedidos) */
+        .order-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.2rem;
+            background: var(--bg-light);
+            padding: 0.3rem;
+            border-radius: 10px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 0.5rem 0.3rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+        }
+
+        .tab-btn.active {
+            background: var(--white);
+            color: var(--primary);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .order-list-container {
+            min-height: 160px;
+        }
+
+        .order-pane {
+            display: none;
+        }
+
+        .order-pane.active {
+            display: block;
+        }
+
         .list-item {
-            padding: 1rem 0;
+            padding: 0.9rem 0;
             border-bottom: 1px solid #edf2f7;
             display: flex;
             justify-content: space-between;
@@ -176,27 +214,26 @@
         }
 
         .item-info h4 {
-            font-size: 0.95rem;
+            font-size: 0.92rem;
             color: var(--text-dark);
             margin-bottom: 0.2rem;
         }
 
         .item-info span {
-            font-size: 0.82rem;
+            font-size: 0.8rem;
             color: var(--text-muted);
         }
 
         .status-tag {
-            font-size: 0.78rem;
-            padding: 0.3rem 0.8rem;
+            font-size: 0.75rem;
+            padding: 0.3rem 0.7rem;
             border-radius: 50px;
             font-weight: 600;
         }
 
-        .status-tag.active {
-            background-color: #d1fae5;
-            color: #065f46;
-        }
+        .status-tag.active { background-color: #d1fae5; color: #065f46; }
+        .status-tag.paid { background-color: #e0f2fe; color: #0369a1; }
+        .status-tag.pending { background-color: #fef3c7; color: #92400e; }
 
         .btn-action {
             display: inline-block;
@@ -217,7 +254,6 @@
             color: var(--white);
         }
 
-        /* Rodapé */
         footer {
             background-color: #111816;
             color: var(--white);
@@ -240,7 +276,6 @@
 </head>
 <body>
 
-    <!-- Topbar -->
     <header>
         <div class="navbar">
             <a href="index.html" class="logo">
@@ -253,13 +288,11 @@
         </div>
     </header>
 
-    <!-- Conteúdo do Dashboard -->
     <div class="dashboard-container">
         
-        <!-- Banner de Boas-Vindas -->
         <div class="welcome-banner">
             <div>
-                <h1 id="tituloBoasVindas">Painel Exclusivo do Paciente</h1>
+                <h1>Painel Exclusivo do Paciente</h1>
                 <p>Gerencie seus documentos legais, prescrições e acompanhe seus tratamentos autorizados.</p>
             </div>
             <div>
@@ -267,7 +300,6 @@
             </div>
         </div>
 
-        <!-- Grade de Informações -->
         <div class="dashboard-grid">
 
             <!-- 1. Receitas Médicas -->
@@ -314,25 +346,61 @@
                 <a href="#" class="btn-action" onclick="alert('Download da certidão iniciado.')">Baixar Certificado Oficial</a>
             </div>
 
-            <!-- 3. Produtos e Histórico de Aquisição -->
+            <!-- 3. Produtos e Histórico de Aquisição com Abas Interativas -->
             <div class="card-panel">
                 <div>
                     <h3>📦 Meus Produtos e Pedidos</h3>
-                    <div class="list-item">
-                        <div class="item-info">
-                            <h4>Extrato Fitoterápico 30ml</h4>
-                            <span>Pedido em 02/03/2026</span>
-                        </div>
-                        <span class="status-tag active">Entregue</span>
+                    
+                    <!-- Botões de navegação das abas -->
+                    <div class="order-tabs">
+                        <button class="tab-btn active" onclick="mudarAba(event, 'entregues')">Entregues</button>
+                        <button class="tab-btn" onclick="mudarAba(event, 'pagos')">Pagos</button>
+                        <button class="tab-btn" onclick="mudarAba(event, 'aberto')">Em Aberto</button>
                     </div>
-                    <div class="list-item">
-                        <div class="item-info">
-                            <h4>Kit de Insumos e Óleo 20ml</h4>
-                            <span>Pedido em 15/01/2026</span>
+
+                    <div class="order-list-container">
+                        <!-- Aba: Entregues -->
+                        <div id="entregues" class="order-pane active">
+                            <div class="list-item">
+                                <div class="item-info">
+                                    <h4>Extrato Fitoterápico 30ml</h4>
+                                    <span>Entregue em 05/03/2026</span>
+                                </div>
+                                <span class="status-tag active">Entregue</span>
+                            </div>
+                            <div class="list-item">
+                                <div class="item-info">
+                                    <h4>Kit de Insumos e Óleo 20ml</h4>
+                                    <span>Entregue em 18/01/2026</span>
+                                </div>
+                                <span class="status-tag active">Entregue</span>
+                            </div>
                         </div>
-                        <span class="status-tag active">Entregue</span>
+
+                        <!-- Aba: Pagos -->
+                        <div id="pagos" class="order-pane">
+                            <div class="list-item">
+                                <div class="item-info">
+                                    <h4>Óleo Full Spectrum 10ml</h4>
+                                    <span>Pagto Confirmado • Em separação</span>
+                                </div>
+                                <span class="status-tag paid">Pago</span>
+                            </div>
+                        </div>
+
+                        <!-- Aba: Em Aberto -->
+                        <div id="aberto" class="order-pane">
+                            <div class="list-item">
+                                <div class="item-info">
+                                    <h4>Extrato CBD 20:1 (Lote Novo)</h4>
+                                    <span>Aguardando compensação do Pix</span>
+                                </div>
+                                <span class="status-tag pending">Em Aberto</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
+
                 <a href="#" class="btn-action" onclick="alert('Redirecionando para catálogo de associados.')">Solicitar Novo Lote / Retirada</a>
             </div>
 
@@ -340,12 +408,23 @@
 
     </div>
 
-    <!-- Rodapé -->
     <footer>
         <p>&copy; 2026 Associação Cannapis. Todos os direitos reservados. Ambiente seguro para pacientes associados.</p>
     </footer>
 
     <script>
+        // Função para alternar entre as abas de pedidos
+        function mudarAba(evt, idAba) {
+            const panes = document.querySelectorAll('.order-pane');
+            panes.forEach(pane => pane.classList.remove('active'));
+
+            const buttons = document.querySelectorAll('.tab-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+
+            document.getElementById(idAba).classList.add('active');
+            evt.currentTarget.classList.add('active');
+        }
+
         // Carrega o nome cadastrado e exibe na parte superior
         window.onload = function() {
             const nomeCadastrado = localStorage.getItem('nomePaciente');

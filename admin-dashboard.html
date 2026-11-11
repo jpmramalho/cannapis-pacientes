@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Administrativo | CANNAPIS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1b4332;
+            --primary-light: #2d6a4f;
+            --accent: #52b788;
+            --bg-light: #f4f6f5;
+            --text-dark: #212529;
+            --text-muted: #6c757d;
+            --white: #ffffff;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Barra Lateral (Sidebar) */
+        aside {
+            width: 260px;
+            background-color: var(--primary);
+            color: var(--white);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+            box-shadow: 4px 0 20px rgba(0,0,0,0.05);
+            z-index: 100;
+        }
+
+        .sidebar-brand {
+            padding: 1.8rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--white);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .sidebar-brand span {
+            color: var(--accent);
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 1.5rem 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .sidebar-menu button {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: rgba(255,255,255,0.8);
+            padding: 0.9rem 1.2rem;
+            text-align: left;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .sidebar-menu button:hover, .sidebar-menu button.active {
+            background-color: var(--primary-light);
+            color: var(--white);
+        }
+
+        /* Estilo para Submodulos */
+        .submenu {
+            list-style: none;
+            padding-left: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+            margin-top: 0.3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .submenu button {
+            font-size: 0.88rem !important;
+            padding: 0.6rem 1rem !important;
+            color: rgba(255,255,255,0.7) !important;
+        }
+
+        .submenu button:hover, .submenu button.active {
+            background-color: rgba(255,255,255,0.1) !important;
+            color: var(--white) !important;
+        }
+
+        .sidebar-footer {
+            padding: 1.5rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .btn-logout {
+            width: 100%;
+            background-color: #fee2e2;
+            color: #991b1b;
+            padding: 0.7rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .btn-logout:hover {
+            background-color: #fecaca;
+        }
+
+        /* Conteúdo Principal */
+        .main-content {
+            margin-left: 260px;
+            flex: 1;
+            padding: 2.5rem;
+            overflow-y: auto;
+        }
+
+        .top-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2.5rem;
+            background: var(--white);
+            padding: 1.2rem 2rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+        }
+
+        .top-header h2 {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .stat-card {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: 16px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.04);
+            border-left: 5px solid var(--accent);
+        }
+
+        .stat-card.financeiro-card {
+            border-left-color: #f59e0b;
+        }
+
+        .stat-card.recebido-card {
+            border-left-color: #10b981;
+        }
+
+        .stat-card h4 {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card .number {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-card.financeiro-card .number {
+            color: #b45309;
+        }
+
+        .stat-card.recebido-card .number {
+            color: #047857;
+        }
+
+        .management-section {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+            margin-bottom: 2.5rem;
+            overflow-x: auto;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .section-header h3 {
+            font-size: 1.2rem;
+            color: var(--primary);
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: var(--white);
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-light);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        th, td {
+            padding: 0.9rem;
+            border-bottom: 1px solid #edf2f7;
+        }
+
+        th {
+            background-color: var(--bg-light);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .status-badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 50px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .status-badge.pago { background-color: #d1fae5; color: #065f46; }
+        .status-badge.aberto { background-color: #fef3c7; color: #92400e; }
+        .status-badge.entregue { background-color: #e0f2fe; color: #0369a1; }
+        .status-badge.ativo { background-color: #d1fae5; color: #065f46; }
+
+        .action-btns button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-right: 0.8rem;
+            color: var(--primary);
+        }
+
+        .action-btns button:hover {
+            text-decoration: underline;
+        }
+
+        .action-btns button.delete {
+            color: #991b1b;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .modal-content {
+            background: var(--white);
+            padding: 2.5rem;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 480px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-content h3 {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 0.7rem;
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            font-size: 0.95rem;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        #blocoCartaoCredito {
+            display: none;
+            background: var(--bg-light);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1.2rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        .calc-info {
+            font-size: 0.85rem;
+            color: var(--primary);
+            font-weight: 600;
+            margin-top: 0.3rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Lateral -->
+    <aside>
+        <a href="index.html" class="sidebar-brand">
+            🌱 CANNA<span>PIS</span>
+        </a>
+        <ul class="sidebar-menu">
+            <li><button class="active" onclick="mudarAba(event, 'aba-dashboard')">📊 Dashboard</button></li>
+            <li><button onclick="mudarAba(event, 'aba-pacientes')">👥 Pacientes</button></li>
+            <li><button onclick="mudarAba(event, 'aba-produtos')">🌿 Produtos</button></li>
+            <li><button onclick="mudarAba(event, 'aba-pedidos')">📦 Pedidos</button></li>
+            
+            <!-- Módulo Financeiro com Submódulos -->
+            <li>
+                <button onclick="mudarAba(event, 'aba-contas-receber')">💰 Financeiro</button>
+                <ul class="submenu">
+                    <li><button id="btnSubContas" class="active" onclick="mudarAba(event, 'aba-contas-receber')">📥 Contas a Receber</button></li>
+                    <li><button id="btnSubHistorico" onclick="mudarAba(event, 'aba-historico-recebidos')">📜 Histórico Recebidos</button></li>
+                </ul>
+            </li>
+        </ul>
+        <div class="sidebar-footer">
+            <a href="login.html" class="btn-logout">Sair do Sistema</a>
+        </div>
+    </aside>
+
+    <!-- Conteúdo Principal -->
+    <div class="main-content">
+        
+        <div class="top-header">
+            <h2 id="tituloPagina">Visão Geral do Sistema</h2>
+            <span style="font-weight: 600; color: var(--text-muted); font-size: 0.9rem;">Painel Master</span>
+        </div>
+
+        <!-- 1. ABA DASHBOARD -->
+        <div id="aba-dashboard" class="tab-content active">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h4>Pacientes Cadastrados</h4>
+                    <div class="number" id="statPacientes">2</div>
+                </div>
+                <div class="stat-card">
+                    <h4>Produtos Cadastrados</h4>
+                    <div class="number" id="statProdutos">2</div>
+                </div>
+                <div class="stat-card">
+                    <h4>Pedidos Pagos</h4>
+                    <div class="number" id="statPagos">1</div>
+                </div>
+                <div class="stat-card financeiro-card">
+                    <h4>Total a Receber (Pendente)</h4>
+                    <div class="number" id="statValorAReceber">R$ 0,00</div>
+                </div>
+            </div>
+            
+            <div class="management-section">
+                <h3>Atividade Recente</h3>
+                <p style="color: var(--text-muted); margin-top: 0.8rem; font-size: 0.95rem;">Painel administrativo centralizado com bloqueio automático de pedidos para pacientes inadimplentes.</p>
+            </div>
+        </div>
+
+        <!-- 2. ABA PACIENTES -->
+        <div id="aba-pacientes" class="tab-content">
+            <div class="management-section">
+                <div class="section-header">
+                    <h3>Gerenciamento de Pacientes</h3>
+                    <button class="btn-primary" onclick="abrirModalPaciente()">+ Novo Paciente</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nome Completo</th>
+                            <th>CPF</th>
+                            <th>Nascimento</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelaPacientes">
+                        <tr>
+                            <td>Carlos Eduardo Silva</td>
+                            <td>123.456.789-00</td>
+                            <td>12/05/1985</td>
+                            <td><span class="status-badge ativo">Ativo</span></td>
+                            <td class="action-btns">
+                                <button onclick="editarPaciente(this)">Editar</button>
+                                <button class="delete" onclick="removerLinha(this)">Excluir</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Mariana Costa Lima</td>
+                            <td>987.654.321-11</td>
+                            <td>22/09/1990</td>
+                            <td><span class="status-badge ativo">Ativo</span></td>
+                            <td class="action-btns">
+                                <button onclick="editarPaciente(this)">Editar</button>
+                                <button class="delete" onclick="removerLinha(this)">Excluir</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 3. ABA PRODUTOS -->
+        <div id="aba-produtos" class="tab-content">
+            <div class="management-section">
+                <div class="section-header">
+                    <h3>Catálogo de Produtos</h3>
+                    <button class="btn-primary" onclick="abrirModalProduto()">+ Novo Produto</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nome do Produto</th>
+                            <th>Preço (R$)</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelaProdutos">
+                        <tr>
+                            <td>Extrato CBD/THC 20:1 (30ml)</td>
+                            <td>R$ 280,00</td>
+                            <td class="action-btns">
+                                <button onclick="editarProduto(this)">Editar</button>
+                                <button class="delete" onclick="removerLinha(this)">Excluir</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Óleo Full Spectrum 10ml</td>
+                            <td>R$ 150,00</td>
+                            <td class="action-btns">
+                                <button onclick="editarProduto(this)">Editar</button>
+                                <button class="delete" onclick="removerLinha(this)">Excluir</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 4. ABA PEDIDOS -->
+        <div id="aba-pedidos" class="tab-content">
+            <div class="management-section">
+                <div class="section-header">
+                    <h3>Gerenciamento de Pedidos</h3>
+                    <button class="btn-primary" onclick="abrirModalPedido()">+ Criar Novo Pedido</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Paciente</th>
+                            <th>Produto Selecionado</th>
+                            <th>Forma de Pagamento</th>
+                            <th>Data Envio</th>
+                            <th>Data Pagto</th>
+                            <th>Status Pedido</th>
+                            <th>Pagamento</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelaPedidos">
+                        <tr>
+                            <td>Carlos Eduardo Silva</td>
+                            <td>Extrato CBD/THC 20:1 (30ml) - R$ 280,00</td>
+                            <td>Pix</td>
+                            <td>05/03/2026</td>
+                            <td>05/03/2026</td>
+                            <td><span class="status-badge entregue">Entregue</span></td>
+                            <td><span class="status-badge pago">Pago</span></td>
+                            <td class="action-btns">
+                                <button onclick="editarPedido(this)">Editar</button>
+                                <button class="delete" onclick="removerLinha(this)">Excluir</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 5. SUBMÓDULO: CONTAS A RECEBER -->
+        <div id="aba-contas-receber" class="tab-content">
+            <div class="stats-grid">
+                <div class="stat-card financeiro-card">
+                    <h4>Total Contas a Receber (Pendente)</h4>
+                    <div class="number" id="financeiroTotalAReceber">R$ 0,00</div>
+                </div>
+            </div>
+
+            <div class="management-section">
+                <div class="section-header">
+                    <h3>📥 Contas a Receber (Valores Pendentes)</h3>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Paciente</th>
+                            <th>Produto / Detalhes</th>
+                            <th>Data Pagto Prevista</th>
+                            <th>Valor</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelaFinanceiroPendente">
+                        <!-- Preenchido automaticamente -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 6. SUBMÓDULO: HISTÓRICO DE RECEBIDOS -->
+        <div id="aba-historico-recebidos" class="tab-content">
+            <div class="stats-grid">
+                <div class="stat-card recebido-card">
+                    <h4>Total Histórico Recebido</h4>
+                    <div class="number" id="financeiroTotalRecebido">R$ 0,00</div>
+                </div>
+            </div>
+
+            <div class="management-section">
+                <div class="section-header">
+                    <h3>📜 Histórico de Pagamentos Recebidos</h3>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Paciente</th>
+                            <th>Produto / Detalhes</th>
+                            <th>Data Efetiva do Pagamento</th>
+                            <th>Valor Recebido</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelaFinanceiroRecebido">
+                        <!-- Preenchido automaticamente -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Modal Paciente -->
+    <div id="modalPaciente" class="modal">
+        <div class="modal-content">
+            <h3 id="tituloModalPaciente">Cadastrar Novo Paciente</h3>
+            <div class="form-group">
+                <label>Nome Completo (Nome e Sobrenome)</label>
+                <input type="text" id="pNome" placeholder="Ex: Ana Paula" required>
+            </div>
+            <div class="form-group">
+                <label>CPF</label>
+                <input type="text" id="pCpf" placeholder="000.000.000-00" maxlength="14" oninput="mascaraCPF(this)" required>
+            </div>
+            <div class="form-group">
+                <label>Data de Nascimento</label>
+                <input type="date" id="pNasc" required>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-primary" style="flex:1;" onclick="salvarPaciente()">Salvar</button>
+                <button class="btn-primary" style="flex:1; background-color:#6c757d;" onclick="fecharModais()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Produto -->
+    <div id="modalProduto" class="modal">
+        <div class="modal-content">
+            <h3 id="tituloModalProduto">Cadastrar Novo Produto</h3>
+            <div class="form-group">
+                <label>Nome do Produto</label>
+                <input type="text" id="prodNome" placeholder="Ex: Extrato Full Spectrum 30ml" required>
+            </div>
+            <div class="form-group">
+                <label>Preço (R$)</label>
+                <input type="text" id="prodPreco" placeholder="Ex: 250,00" required>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-primary" style="flex:1;" onclick="salvarProduto()">Salvar</button>
+                <button class="btn-primary" style="flex:1; background-color:#6c757d;" onclick="fecharModais()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Pedido -->
+    <div id="modalPedido" class="modal">
+        <div class="modal-content">
+            <h3 id="tituloModalPedido">Criar Novo Pedido</h3>
+            <div class="form-group">
+                <label>Selecione o Paciente</label>
+                <select id="ordPacienteSelect"></select>
+            </div>
+            <div class="form-group">
+                <label>Selecione o Produto</label>
+                <select id="ordProdutoSelect" onchange="aoSelecionarProduto()"></select>
+            </div>
+            <div class="form-group">
+                <label>Forma de Pagamento</label>
+                <select id="ordFormaPagto" onchange="verificarFormaPagto()">
+                    <option value="Pix">Pix</option>
+                    <option value="Cartão de Crédito">Cartão de Crédito</option>
+                    <option value="Cartão de Débito">Cartão de Débito</option>
+                    <option value="Boleto">Boleto</option>
+                    <option value="Dinheiro">Dinheiro</option>
+                </select>
+            </div>
+
+            <!-- Bloco de Crédito Inteligente -->
+            <div id="blocoCartaoCredito">
+                <div class="form-group" style="margin-bottom: 0.8rem;">
+                    <label>Quantidade de Parcelas</label>
+                    <select id="ordParcelas" onchange="recalcularParcelas()">
+                        <option value="1">1x (À vista)</option>
+                        <option value="2">2x</option>
+                        <option value="3">3x</option>
+                        <option value="4">4x</option>
+                        <option value="5">5x</option>
+                        <option value="6">6x</option>
+                        <option value="7">7x</option>
+                        <option value="8">8x</option>
+                        <option value="9">9x</option>
+                        <option value="10">10x</option>
+                        <option value="11">11x</option>
+                        <option value="12">12x</option>
+                    </select>
+                </div>
+                <div class="form-group" style="margin-bottom: 0.4rem;">
+                    <label>Valor Total com Juros (R$)</label>
+                    <input type="text" id="ordValorTotal" placeholder="Ex: 550,00" oninput="recalcularParcelas()">
+                </div>
+                <div class="calc-info" id="infoCalculoParcelas">Valor da Parcela: R$ 0,00</div>
+            </div>
+
+            <!-- Campos de Data de Envio e Pagamento -->
+            <div class="form-group">
+                <label>Data de Envio</label>
+                <input type="date" id="ordDataEnvio">
+            </div>
+            <div class="form-group">
+                <label>Data de Pagamento</label>
+                <input type="date" id="ordDataPagto">
+            </div>
+
+            <div class="form-group">
+                <label>Status do Pedido</label>
+                <select id="ordStatus">
+                    <option value="Em Aberto">Em Aberto / Separação</option>
+                    <option value="Entregue">Entregue</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Status do Pagamento</label>
+                <select id="ordPagamento">
+                    <option value="Pendente">Pendente</option>
+                    <option value="Pago">Pago</option>
+                </select>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-primary" style="flex:1;" onclick="salvarPedido()">Salvar</button>
+                <button class="btn-primary" style="flex:1; background-color:#6c757d;" onclick="fecharModais()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function mudarAba(evento, idAba) {
+            document.querySelectorAll('.tab-content').forEach(aba => aba.classList.remove('active'));
+            document.querySelectorAll('.sidebar-menu button').forEach(btn => btn.classList.remove('active'));
+
+            document.getElementById(idAba).classList.add('active');
+            evento.currentTarget.classList.add('active');
+
+            if(idAba === 'aba-contas-receber') {
+                document.getElementById('btnSubContas').classList.add('active');
+                document.getElementById('btnSubHistorico').classList.remove('active');
+            } else if(idAba === 'aba-historico-recebidos') {
+                document.getElementById('btnSubHistorico').classList.add('active');
+                document.getElementById('btnSubContas').classList.remove('active');
+            }
+
+            const titulos = {
+                'aba-dashboard': 'Visão Geral do Sistema',
+                'aba-pacientes': 'Gerenciamento de Pacientes',
+                'aba-produtos': 'Catálogo de Produtos',
+                'aba-pedidos': 'Gerenciamento de Pedidos',
+                'aba-contas-receber': 'Controle Financeiro: Contas a Receber',
+                'aba-historico-recebidos': 'Controle Financeiro: Histórico de Recebidos'
+            };
+            document.getElementById('tituloPagina').innerText = titulos[idAba];
+            atualizarEstatisticas();
+        }
+
+        function aoSelecionarProduto() {
+            const selectProd = document.getElementById('ordProdutoSelect');
+            const textoProd = selectProd.value;
+            const matchPreco = textoProd.match(/R\$\s*([\d.,]+)/);
+            if (matchPreco) {
+                document.getElementById('ordValorTotal').value = matchPreco[1];
+                recalcularParcelas();
+            }
+        }
+
+        function verificarFormaPagto() {
+            const forma = document.getElementById('ordFormaPagto').value;
+            const bloco = document.getElementById('blocoCartaoCredito');
+            if (forma === 'Cartão de Crédito') {
+                bloco.style.display = 'block';
+                aoSelecionarProduto();
+            } else {
+                bloco.style.display = 'none';
+            }
+        }
+
+        function recalcularParcelas() {
+            const qtdParcelas = parseInt(document.getElementById('ordParcelas').value) || 1;
+            let strValor = document.getElementById('ordValorTotal').value.trim();
+            
+            strValor = strValor.replace('R$', '').trim().replace('.', '').replace(',', '.');
+            const valorTotal = parseFloat(strValor) || 0;
+
+            const valorParcela = valorTotal / qtdParcelas;
+            document.getElementById('infoCalculoParcelas').innerText = 
+                `Valor da Parcela: ${qtdParcelas}x de R$ ${valorParcela.toFixed(2).replace('.', ',')}`;
+        }
+
+        function mascaraCPF(input) {
+            let v = input.value.replace(/\D/g, "");
+            if (v.length > 11) v = v.slice(0, 11);
+            v = v.replace(/(\d{3})(\d)/, "$1.$2");
+            v = v.replace(/(\d{3})(\d)/, "$1.$2");
+            v = v.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+            input.value = v;
+        }
+
+        function abrirModalPaciente() {
+            document.getElementById('tituloModalPaciente').innerText = 'Cadastrar Novo Paciente';
+            document.getElementById('pNome').value = '';
+            document.getElementById('pCpf').value = '';
+            document.getElementById('pNasc').value = '';
+            document.getElementById('modalPaciente').style.display = 'flex';
+        }
+
+        let linhaEditandoPaciente = null;
+        function editarPaciente(btn) {
+            const linha = btn.closest('tr');
+            document.getElementById('pNome').value = linha.cells[0].innerText;
+            document.getElementById('pCpf').value = linha.cells[1].innerText;
+            document.getElementById('pNasc').value = '1990-01-01';
+            document.getElementById('tituloModalPaciente').innerText = 'Editar Paciente';
+            linhaEditandoPaciente = linha;
+            document.getElementById('modalPaciente').style.display = 'flex';
+        }
+
+        function salvarPaciente() {
+            const nome = document.getElementById('pNome').value.trim();
+            const cpfInput = document.getElementById('pCpf').value.replace(/\D/g, '');
+            const nascimento = document.getElementById('pNasc').value;
+
+            if(!nome || !cpfInput || !nascimento) {
+                alert('Todos os campos são obrigatórios!');
+                return;
+            }
+
+            const partesNome = nome.split(' ').filter(p => p.length > 0);
+            if(partesNome.length < 2) {
+                alert('Digite o nome completo contendo nome e sobrenome.');
+                return;
+            }
+
+            if(cpfInput.length !== 11) {
+                alert('O CPF deve conter exatamente 11 dígitos.');
+                return;
+            }
+
+            const cpfFormatado = cpfInput.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+            const [ano, mes, dia] = nascimento.split('-');
+            const dataFormatada = `${dia}/${mes}/${ano}`;
+
+            if(linhaEditandoPaciente) {
+                linhaEditandoPaciente.cells[0].innerText = nome;
+                linhaEditandoPaciente.cells[1].innerText = cpfFormatado;
+                linhaEditandoPaciente.cells[2].innerText = dataFormatada;
+                linhaEditandoPaciente = null;
+            } else {
+                const tbody = document.getElementById('tabelaPacientes');
+                const nova = document.createElement('tr');
+                nova.innerHTML = `
+                    <td>${nome}</td>
+                    <td>${cpfFormatado}</td>
+                    <td>${dataFormatada}</td>
+                    <td><span class="status-badge ativo">Ativo</span></td>
+                    <td class="action-btns">
+                        <button onclick="editarPaciente(this)">Editar</button>
+                        <button class="delete" onclick="removerLinha(this)">Excluir</button>
+                    </td>
+                `;
+                tbody.appendChild(nova);
+            }
+            fecharModais();
+            atualizarEstatisticas();
+        }
+
+        function abrirModalProduto() {
+            document.getElementById('tituloModalProduto').innerText = 'Cadastrar Novo Produto';
+            document.getElementById('prodNome').value = '';
+            document.getElementById('prodPreco').value = '';
+            document.getElementById('modalProduto').style.display = 'flex';
+        }
+
+        let linhaEditandoProduto = null;
+        function editarProduto(btn) {
+            const linha = btn.closest('tr');
+            document.getElementById('prodNome').value = linha.cells[0].innerText;
+            document.getElementById('prodPreco').value = linha.cells[1].innerText.replace('R$ ', '');
+            document.getElementById('tituloModalProduto').innerText = 'Editar Produto';
+            linhaEditandoProduto = linha;
+            document.getElementById('modalProduto').style.display = 'flex';
+        }
+
+        function salvarProduto() {
+            const nome = document.getElementById('prodNome').value.trim();
+            const preco = document.getElementById('prodPreco').value.trim();
+            if(!nome || !preco) { alert('Preencha o nome e o preço!'); return; }
+
+            const precoFormatado = preco.includes('R$') ? preco : `R$ ${preco}`;
+
+            if(linhaEditandoProduto) {
+                linhaEditandoProduto.cells[0].innerText = nome;
+                linhaEditandoProduto.cells[1].innerText = precoFormatado;
+                linhaEditandoProduto = null;
+            } else {
+                const tbody = document.getElementById('tabelaProdutos');
+                const nova = document.createElement('tr');
+                nova.innerHTML = `
+                    <td>${nome}</td>
+                    <td>${precoFormatado}</td>
+                    <td class="action-btns">
+                        <button onclick="editarProduto(this)">Editar</button>
+                        <button class="delete" onclick="removerLinha(this)">Excluir</button>
+                    </td>
+                `;
+                tbody.appendChild(nova);
+            }
+            fecharModais();
+            atualizarEstatisticas();
+        }
+
+        // Função auxiliar para verificar se um paciente possui conta em aberto
+        function pacienteTemDebitoPendente(nomePacienteCompleto) {
+            let temDebito = false;
+            const linhasPedidos = document.querySelectorAll('#tabelaPedidos tr');
+            linhasPedidos.forEach(linha => {
+                const pacientePedido = linha.cells[0].innerText;
+                const pagBadge = linha.cells[6].querySelector('.status-badge');
+                const statusPagamento = pagBadge ? pagBadge.innerText : '';
+
+                // Se o pedido pertence ao paciente e está com pagamento Pendente
+                if (pacientePedido === nomePacienteCompleto && statusPagamento === 'Pendente') {
+                    temDebito = true;
+                }
+            });
+            return temDebito;
+        }
+
+        function abrirModalPedido() {
+            document.getElementById('tituloModalPedido').innerText = 'Criar Novo Pedido';
+            document.getElementById('blocoCartaoCredito').style.display = 'none';
+            document.getElementById('ordFormaPagto').value = 'Pix';
+            document.getElementById('ordParcelas').value = '1';
+            document.getElementById('ordValorTotal').value = '';
+            document.getElementById('ordDataEnvio').value = '';
+            document.getElementById('ordDataPagto').value = '';
+            document.getElementById('infoCalculoParcelas').innerText = 'Valor da Parcela: R$ 0,00';
+            
+            const selectPaciente = document.getElementById('ordPacienteSelect');
+            selectPaciente.innerHTML = '';
+            const linhasPacientes = document.querySelectorAll('#tabelaPacientes tr');
+            if(linhasPacientes.length === 0) {
+                selectPaciente.innerHTML = '<option value="">Nenhum paciente cadastrado</option>';
+            } else {
+                linhasPacientes.forEach(linha => {
+                    const nomePac = linha.cells[0].innerText;
+                    const cpfPac = linha.cells[1].innerText;
+                    const opt = document.createElement('option');
+                    
+                    const nomeCompleto = `${nomePac} (${cpfPac})`;
+                    opt.value = nomeCompleto;
+
+                    // Verifica se o paciente possui débito em aberto para sinalizar no select
+                    if (pacienteTemDebitoPendente(nomeCompleto)) {
+                        opt.innerText = `${nomePac} - ${cpfPac} (⚠️ Débito em Aberto)`;
+                        opt.style.color = '#991b1b';
+                        opt.style.fontWeight = 'bold';
+                    } else {
+                        opt.innerText = `${nomePac} - ${cpfPac}`;
+                    }
+
+                    selectPaciente.appendChild(opt);
+                });
+            }
+
+            const selectProduto = document.getElementById('ordProdutoSelect');
+            selectProduto.innerHTML = '';
+            const linhasProdutos = document.querySelectorAll('#tabelaProdutos tr');
+            if(linhasProdutos.length === 0) {
+                selectProduto.innerHTML = '<option value="">Nenhum produto cadastrado</option>';
+            } else {
+                linhasProdutos.forEach(linha => {
+                    const nomeProd = linha.cells[0].innerText;
+                    const precoProd = linha.cells[1].innerText;
+                    const opt = document.createElement('option');
+                    opt.value = `${nomeProd} - ${precoProd}`;
+                    opt.innerText = `${nomeProd} (${precoProd})`;
+                    selectProduto.appendChild(opt);
+                });
+                aoSelecionarProduto();
+            }
+
+            document.getElementById('modalPedido').style.display = 'flex';
+        }
+
+        let linhaEditandoPedido = null;
+        function editarPedido(btn) {
+            const linha = btn.closest('tr');
+            
+            abrirModalPedido();
+            document.getElementById('tituloModalPedido').innerText = 'Editar Pedido';
+            document.getElementById('ordPacienteSelect').value = linha.cells[0].innerText;
+            document.getElementById('ordProdutoSelect').value = linha.cells[1].innerText;
+            
+            const textoPagto = linha.cells[2].innerText;
+            if (textoPagto.includes('Cartão de Crédito')) {
+                document.getElementById('ordFormaPagto').value = 'Cartão de Crédito';
+                document.getElementById('blocoCartaoCredito').style.display = 'block';
+                if (textoPagto.includes('(')) {
+                    const matchQtd = textoPagto.match(/(\d+)x/);
+                    if(matchQtd) document.getElementById('ordParcelas').value = matchQtd[1];
+
+                    const matchVal = textoPagto.match(/Total:\s*R\$\s*([\d.,]+)/);
+                    if(matchVal) document.getElementById('ordValorTotal').value = matchVal[1];
+                }
+                recalcularParcelas();
+            } else {
+                document.getElementById('ordFormaPagto').value = textoPagto.split(' ')[0];
+            }
+
+            const dataEnvioTxt = linha.cells[3].innerText;
+            if (dataEnvioTxt && dataEnvioTxt.includes('/')) {
+                const [d, m, a] = dataEnvioTxt.split('/');
+                document.getElementById('ordDataEnvio').value = `${a}-${m}-${d}`;
+            }
+
+            const dataPagtoTxt = linha.cells[4].innerText;
+            if (dataPagtoTxt && dataPagtoTxt.includes('/')) {
+                const [d, m, a] = dataPagtoTxt.split('/');
+                document.getElementById('ordDataPagto').value = `${a}-${m}-${d}`;
+            }
+            
+            linhaEditandoPedido = linha;
+            document.getElementById('modalPedido').style.display = 'flex';
+        }
+
+        function salvarPedido() {
+            const pacienteSelecionado = document.getElementById('ordPacienteSelect').value;
+            const produtoSelecionado = document.getElementById('ordProdutoSelect').value;
+            let formaPagto = document.getElementById('ordFormaPagto').value;
+            const dataEnvioRaw = document.getElementById('ordDataEnvio').value;
+            const dataPagtoRaw = document.getElementById('ordDataPagto').value;
+            const status = document.getElementById('ordStatus').value;
+            const pagamento = document.getElementById('ordPagamento').value;
+
+            if(!pacienteSelecionado || !produtoSelecionado) { alert('Selecione um paciente e um produto válidos!'); return; }
+
+            // REGRA DE BLOQUEIO: Se for um NOVO pedido e o paciente tiver débito pendente, bloqueia a criação
+            if (!linhaEditandoPedido && pacienteTemDebitoPendente(pacienteSelecionado)) {
+                alert('❌ OPERAÇÃO BLOQUEADA: Este paciente possui contas/pedidos em aberto (pendentes). Regularize o financeiro antes de criar um novo pedido.');
+                return;
+            }
+
+            let dataEnvioFmt = dataEnvioRaw ? dataEnvioRaw.split('-').reverse().join('/') : '-';
+            let dataPagtoFmt = dataPagtoRaw ? dataPagtoRaw.split('-').reverse().join('/') : '-';
+
+            if (formaPagto === 'Cartão de Crédito') {
+                const qtdParcelas = parseInt(document.getElementById('ordParcelas').value) || 1;
+                let strValor = document.getElementById('ordValorTotal').value.trim();
+                strValor = strValor.replace('R$', '').trim().replace('.', '').replace(',', '.');
+                const valorTotal = parseFloat(strValor) || 0;
+                
+                const valorParcela = valorTotal / qtdParcelas;
+                const valorParcelaFmt = valorParcela.toFixed(2).replace('.', ',');
+                const valorTotalFmt = valorTotal.toFixed(2).replace('.', ',');
+
+                formaPagto = `Cartão de Crédito (${qtdParcelas}x de R$ ${valorParcelaFmt} - Total: R$ ${valorTotalFmt})`;
+            }
+
+            const statusClass = status === 'Entregue' ? 'entregue' : 'aberto';
+            const pagClass = pagamento === 'Pago' ? 'pago' : 'aberto';
+
+            if(linhaEditandoPedido) {
+                linhaEditandoPedido.cells[0].innerText = pacienteSelecionado;
+                linhaEditandoPedido.cells[1].innerText = produtoSelecionado;
+                linhaEditandoPedido.cells[2].innerText = formaPagto;
+                linhaEditandoPedido.cells[3].innerText = dataEnvioFmt;
+                linhaEditandoPedido.cells[4].innerText = dataPagtoFmt;
+                linhaEditandoPedido.cells[5].innerHTML = `<span class="status-badge ${statusClass}">${status}</span>`;
+                linhaEditandoPedido.cells[6].innerHTML = `<span class="status-badge ${pagClass}">${pagamento}</span>`;
+                linhaEditandoPedido = null;
+            } else {
+                const tbody = document.getElementById('tabelaPedidos');
+                const nova = document.createElement('tr');
+                nova.innerHTML = `
+                    <td>${pacienteSelecionado}</td>
+                    <td>${produtoSelecionado}</td>
+                    <td>${formaPagto}</td>
+                    <td>${dataEnvioFmt}</td>
+                    <td>${dataPagtoFmt}</td>
+                    <td><span class="status-badge ${statusClass}">${status}</span></td>
+                    <td><span class="status-badge ${pagClass}">${pagamento}</span></td>
+                    <td class="action-btns">
+                        <button onclick="editarPedido(this)">Editar</button>
+                        <button class="delete" onclick="removerLinha(this)">Excluir</button>
+                    </td>
+                `;
+                tbody.appendChild(nova);
+            }
+            fecharModais();
+            atualizarEstatisticas();
+        }
+
+        function removerLinha(btn) {
+            if(confirm('Deseja realmente excluir este item?')) {
+                btn.closest('tr').remove();
+                atualizarEstatisticas();
+            }
+        }
+
+        function fecharModais() {
+            document.getElementById('modalPaciente').style.display = 'none';
+            document.getElementById('modalProduto').style.display = 'none';
+            document.getElementById('modalPedido').style.display = 'none';
+            linhaEditandoPaciente = null;
+            linhaEditandoProduto = null;
+            linhaEditandoPedido = null;
+        }
+
+        function atualizarEstatisticas() {
+            document.getElementById('statPacientes').innerText = document.querySelectorAll('#tabelaPacientes tr').length;
+            document.getElementById('statProdutos').innerText = document.querySelectorAll('#tabelaProdutos tr').length;
+            document.getElementById('statPagos').innerText = document.querySelectorAll('#tabelaPedidos .pago').length;
+
+            let totalAReceber = 0;
+            let totalRecebido = 0;
+            const linhasPedidos = document.querySelectorAll('#tabelaPedidos tr');
+            
+            const tbodyPendente = document.getElementById('tabelaFinanceiroPendente');
+            const tbodyRecebido = document.getElementById('tabelaFinanceiroRecebido');
+            tbodyPendente.innerHTML = '';
+            tbodyRecebido.innerHTML = '';
+
+            linhasPedidos.forEach(linha => {
+                const paciente = linha.cells[0].innerText;
+                const produto = linha.cells[1].innerText;
+                const formaPagto = linha.cells[2].innerText;
+                const dataPagto = linha.cells[4].innerText;
+                const pagBadge = linha.cells[6].querySelector('.status-badge');
+                const statusPagamento = pagBadge ? pagBadge.innerText : '';
+
+                let valorNumerico = 0;
+                
+                if (formaPagto.includes('Cartão de Crédito')) {
+                    const matchTotal = formaPagto.match(/Total:\s*R\$\s*([\d.,]+)/);
+                    if (matchTotal) {
+                        valorNumerico = parseFloat(matchTotal[1].replace('.', '').replace(',', '.'));
+                    } else {
+                        const matchPreco = formaPagto.match(/R\$\s*([\d.,]+)/);
+                        if (matchPreco) valorNumerico = parseFloat(matchPreco[1].replace('.', '').replace(',', '.'));
+                    }
+                } else {
+                    const matchPreco = produto.match(/R\$\s*([\d.,]+)/);
+                    if (matchPreco) {
+                        valorNumerico = parseFloat(matchPreco[1].replace('.', '').replace(',', '.'));
+                    }
+                }
+
+                if (statusPagamento === 'Pendente') {
+                    totalAReceber += valorNumerico;
+                    const novaLinha = document.createElement('tr');
+                    novaLinha.innerHTML = `
+                        <td>${paciente}</td>
+                        <td>${produto.split(' - ')[0]} • ${formaPagto}</td>
+                        <td>${dataPagto}</td>
+                        <td>R$ ${valorNumerico.toFixed(2).replace('.', ',')}</td>
+                        <td><span class="status-badge aberto">Pendente</span></td>
+                    `;
+                    tbodyPendente.appendChild(novaLinha);
+                } else if (statusPagamento === 'Pago') {
+                    totalRecebido += valorNumerico;
+                    const novaLinha = document.createElement('tr');
+                    novaLinha.innerHTML = `
+                        <td>${paciente}</td>
+                        <td>${produto.split(' - ')[0]} • ${formaPagto}</td>
+                        <td>${dataPagto}</td>
+                        <td>R$ ${valorNumerico.toFixed(2).replace('.', ',')}</td>
+                        <td><span class="status-badge pago">Pago</span></td>
+                    `;
+                    tbodyRecebido.appendChild(novaLinha);
+                }
+            });
+
+            if (tbodyPendente.children.length === 0) {
+                tbodyPendente.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">Nenhuma conta a receber no momento.</td></tr>`;
+            }
+
+            if (tbodyRecebido.children.length === 0) {
+                tbodyRecebido.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">Nenhum pagamento registrado no histórico.</td></tr>`;
+            }
+
+            document.getElementById('statValorAReceber').innerText = `R$ ${totalAReceber.toFixed(2).replace('.', ',')}`;
+            document.getElementById('financeiroTotalAReceber').innerText = `R$ ${totalAReceber.toFixed(2).replace('.', ',')}`;
+            document.getElementById('financeiroTotalRecebido').innerText = `R$ ${totalRecebido.toFixed(2).replace('.', ',')}`;
+        }
+
+        window.onload = atualizarEstatisticas;
+    </script>
+</body>
+</html>
