@@ -33,7 +33,7 @@
             min-height: 100vh;
         }
 
-        /* Barra Lateral (Sidebar) */
+        /* Barra Lateral (Sidebar) com Nova Logo */
         aside {
             width: 260px;
             background-color: var(--primary);
@@ -49,19 +49,18 @@
         }
 
         .sidebar-brand {
-            padding: 1.8rem;
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--white);
-            text-decoration: none;
+            padding: 1.2rem 1.5rem;
             display: flex;
             align-items: center;
-            gap: 0.6rem;
+            justify-content: center;
             border-bottom: 1px solid rgba(255,255,255,0.1);
+            background-color: rgba(255, 255, 255, 0.03);
         }
 
-        .sidebar-brand span {
-            color: var(--accent);
+        .sidebar-brand img {
+            max-width: 160px;
+            height: auto;
+            object-fit: contain;
         }
 
         .sidebar-menu {
@@ -377,7 +376,7 @@
     <!-- Barra Lateral (Sidebar) -->
     <aside>
         <a href="index.html" class="sidebar-brand">
-            🌱 CANNA<span>PIS</span>
+            <img src="logo cannapis.jpg" alt="CANNAPIS Logo">
         </a>
         <ul class="sidebar-menu">
             <li><button class="active" onclick="mudarAba(event, 'aba-dashboard')">📊 Dashboard</button></li>
@@ -706,9 +705,6 @@
     </div>
 
     <script>
-        // ==========================================
-        // CONFIGURAÇÃO DO SUPABASE
-        // ==========================================
         const SUPABASE_URL = 'https://spayqjuueykqaqbmqwct.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_po63GUjO8rq-HhWUDFmbpw_dMsi--Ov';
 
@@ -717,9 +713,6 @@
         let listaPacientesCache = [];
         let listaProdutosCache = [];
 
-        // ==========================================
-        // CONTROLE DE ABAS E NAVEGAÇÃO
-        // ==========================================
         function mudarAba(evento, idAba) {
             document.querySelectorAll('.tab-content').forEach(aba => aba.classList.remove('active'));
             document.querySelectorAll('.sidebar-menu button').forEach(btn => btn.classList.remove('active'));
@@ -747,17 +740,11 @@
             carregarDadosGerais();
         }
 
-        // ==========================================
-        // BLOQUEIO TEMPORÁRIO DE CADASTRO/LOGIN DE PACIENTES
-        // ==========================================
         function bloquearAcessoSuporte(event) {
             if (event) event.preventDefault();
             alert("Cadastros e acessos temporariamente indisponíveis. Por favor, faça contato com o suporte.");
         }
 
-        // ==========================================
-        // CARREGAMENTO DE DADOS DO SUPABASE
-        // ==========================================
         async function carregarDadosGerais() {
             await carregarPacientes();
             await carregarProdutos();
@@ -894,9 +881,6 @@
             document.getElementById('financeiroTotalRecebido').innerText = `R$ ${totalRecebido.toFixed(2).replace('.', ',')}`;
         }
 
-        // ==========================================
-        // CRUD DE PACIENTES
-        // ==========================================
         function abrirModalPaciente() {
             document.getElementById('tituloModalPaciente').innerText = 'Cadastrar Novo Paciente';
             document.getElementById('pId').value = '';
@@ -946,9 +930,6 @@
             }
         }
 
-        // ==========================================
-        // CRUD DE PRODUTOS COM ESTOQUE
-        // ==========================================
         function abrirModalProduto() {
             document.getElementById('tituloModalProduto').innerText = 'Cadastrar Novo Produto';
             document.getElementById('prodId').value = '';
@@ -996,9 +977,6 @@
             }
         }
 
-        // ==========================================
-        // FILTRAGEM DINÂMICA DE PACIENTES NO SELECT
-        // ==========================================
         async function preencherSelectPacientes(filtro = '') {
             const selectPac = document.getElementById('ordPacienteSelect');
             selectPac.innerHTML = '';
@@ -1037,9 +1015,6 @@
             preencherSelectPacientes(termo);
         }
 
-        // ==========================================
-        // CRUD DE PEDIDOS E BAIXA AUTOMÁTICA DE ESTOQUE
-        // ==========================================
         function aoSelecionarProduto() {
             const selectProd = document.getElementById('ordProdutoSelect');
             const matchPreco = selectProd.value.match(/R\$\s*([\d.,]+)/);

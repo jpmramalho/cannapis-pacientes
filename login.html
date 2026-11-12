@@ -26,7 +26,7 @@
 
         body {
             background-color: var(--primary);
-            background-image: linear-gradient(rgba(27, 67, 50, 0.85), rgba(27, 67, 50, 0.85)), url('sua-imagem-fundo.jpg');
+            background-image: linear-gradient(rgba(27, 67, 50, 0.85), rgba(27, 67, 50, 0.85));
             background-size: cover;
             background-position: center;
             color: var(--text-dark);
@@ -38,7 +38,7 @@
 
         .login-card {
             background: var(--white);
-            padding: 3rem 2.5rem;
+            padding: 2.5rem 2.5rem;
             border-radius: 20px;
             width: 100%;
             max-width: 420px;
@@ -47,18 +47,16 @@
         }
 
         .brand-logo {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 0.5rem;
+            margin-bottom: 1rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 0.5rem;
         }
 
-        .brand-logo span {
-            color: var(--accent);
+        .brand-logo img {
+            max-width: 180px;
+            height: auto;
+            object-fit: contain;
         }
 
         .login-card h3 {
@@ -153,7 +151,7 @@
 
     <div class="login-card">
         <div class="brand-logo">
-            🌱 CANNA<span>PIS</span>
+            <img src="logo cannapis.jpg" alt="CANNAPIS Logo">
         </div>
         <h3>Área do Paciente</h3>
         <p>Entre com seu CPF e senha cadastrados</p>
@@ -178,7 +176,6 @@
     </div>
 
     <script>
-        // Verifica se é o acesso do administrador ou bloqueia o acesso comum
         function validarAcesso(event) {
             if (event) event.preventDefault();
 
@@ -193,13 +190,11 @@
             alert("Cadastros e acessos temporariamente indisponíveis. Por favor, faça contato com o suporte.");
         }
 
-        // Bloqueia o link de cadastro
         function bloquearCadastro(event) {
             if (event) event.preventDefault();
             alert("Cadastros e acessos temporariamente indisponíveis. Por favor, faça contato com o suporte.");
         }
 
-        // Aplica máscara de CPF apenas se o usuário digitar números (permite digitar "admin")
         function mascaraCPF(input) {
             let valor = input.value;
             if (/[a-zA-Z]/.test(valor)) {
