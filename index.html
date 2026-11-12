@@ -44,24 +44,23 @@
         .navbar {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 1.2rem 2rem;
+            padding: 1rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
         .logo {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--primary);
             text-decoration: none;
             display: flex;
             align-items: center;
-            gap: 0.6rem;
         }
 
-        .logo span {
-            color: var(--accent);
+        /* Logo aumentada conforme solicitado */
+        .logo img {
+            max-height: 68px;
+            width: auto;
+            object-fit: contain;
         }
 
         .nav-links {
@@ -270,7 +269,7 @@
     <header>
         <div class="navbar">
             <a href="#" class="logo">
-                🌱 CANNA<span>PIS</span>
+                <img src="logo cannapis.jpg" alt="CANNAPIS Logo">
             </a>
             <ul class="nav-links">
                 <li><a href="#">Início</a></li>
