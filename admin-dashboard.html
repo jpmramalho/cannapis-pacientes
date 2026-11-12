@@ -314,36 +314,37 @@
             z-index: 2000;
         }
 
+        /* Modal amplo e espaçoso para melhor usabilidade */
         .modal-content {
             background: var(--white);
-            padding: 2.5rem;
+            padding: 2rem 2.5rem;
             border-radius: 16px;
             width: 100%;
-            max-width: 480px;
+            max-width: 650px;
             box-shadow: 0 15px 35px rgba(0,0,0,0.2);
-            max-height: 90vh;
+            max-height: 95vh;
             overflow-y: auto;
         }
 
         .modal-content h3 {
             color: var(--primary);
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.2rem;
         }
 
         .form-group {
-            margin-bottom: 1.2rem;
+            margin-bottom: 1rem;
         }
 
         .form-group label {
             display: block;
             font-size: 0.85rem;
             font-weight: 600;
-            margin-bottom: 0.4rem;
+            margin-bottom: 0.3rem;
         }
 
         .form-group input, .form-group select {
             width: 100%;
-            padding: 0.7rem;
+            padding: 0.6rem 0.8rem;
             border: 1px solid #ced4da;
             border-radius: 8px;
             font-size: 0.95rem;
@@ -352,15 +353,15 @@
         .modal-actions {
             display: flex;
             gap: 1rem;
-            margin-top: 1.5rem;
+            margin-top: 1.2rem;
         }
 
         #blocoCartaoCredito {
             display: none;
             background: var(--bg-light);
-            padding: 1rem;
+            padding: 0.8rem;
             border-radius: 10px;
-            margin-bottom: 1.2rem;
+            margin-bottom: 1rem;
             border: 1px solid #e2e8f0;
         }
 
@@ -620,14 +621,14 @@
             
             <!-- Campo de busca interativa para filtrar pacientes -->
             <div class="form-group">
-                <label>Buscar Paciente por Nome ou CPF</label>
+                <label>Selecione o Paciente (Busca por Nome ou CPF)</label>
                 <input type="text" id="buscaPacienteInput" placeholder="Digite para filtrar..." oninput="filtrarPacientesSelect()">
             </div>
 
             <div class="form-group">
-                <label>Selecione o Paciente</label>
-                <select id="ordPacienteSelect"></select>
+                <select id="ordPacienteSelect" size="4" style="height: 100px;"></select>
             </div>
+
             <div class="form-group">
                 <label>Selecione o Produto</label>
                 <select id="ordProdutoSelect" onchange="aoSelecionarProduto()"></select>
@@ -645,7 +646,7 @@
 
             <!-- Bloco de Crédito Inteligente -->
             <div id="blocoCartaoCredito">
-                <div class="form-group" style="margin-bottom: 0.8rem;">
+                <div class="form-group" style="margin-bottom: 0.6rem;">
                     <label>Quantidade de Parcelas</label>
                     <select id="ordParcelas" onchange="recalcularParcelas()">
                         <option value="1">1x (À vista)</option>
@@ -662,7 +663,7 @@
                         <option value="12">12x</option>
                     </select>
                 </div>
-                <div class="form-group" style="margin-bottom: 0.4rem;">
+                <div class="form-group" style="margin-bottom: 0.3rem;">
                     <label>Valor Total com Juros (R$)</label>
                     <input type="text" id="ordValorTotal" placeholder="Ex: 550,00" oninput="recalcularParcelas()">
                 </div>
@@ -1053,10 +1054,10 @@
             return data && data.length > 0;
         }
 
-        async function abrirModalPedido() {
+        async function abrirModalPedido(filtroInicial = '') {
             document.getElementById('tituloModalPedido').innerText = 'Criar Novo Pedido';
             document.getElementById('ordId').value = '';
-            document.getElementById('buscaPacienteInput').value = '';
+            document.getElementById('buscaPacienteInput').value = filtroInicial;
             document.getElementById('blocoCartaoCredito').style.display = 'none';
             document.getElementById('ordFormaPagto').value = 'Pix';
             document.getElementById('ordParcelas').value = '1';
@@ -1066,7 +1067,7 @@
             
             const { data: pacientes } = await supabaseClient.from('pacientes').select('*');
             listaPacientesCache = pacientes || [];
-            await preencherSelectPacientes('');
+            await preencherSelectPacientes(filtroInicial);
 
             const selectProd = document.getElementById('ordProdutoSelect');
             selectProd.innerHTML = '';
@@ -1087,11 +1088,12 @@
         }
 
         async function editarPedido(id, paciente, produto, formaPagto, dataEnvio, dataPagto, statusPed, statusPag) {
-            await abrirModalPedido();
+            // Extrai apenas o nome principal do paciente para preencher o filtro de busca sem dar conflito
+            const nomeBusca = paciente.split(' (')[0].trim();
+            await abrirModalPedido(nomeBusca);
+            
             document.getElementById('tituloModalPedido').innerText = 'Editar Pedido';
             document.getElementById('ordId').value = id;
-            document.getElementById('buscaPacienteInput').value = paciente.split(' - ')[0]; // Preenche o campo de busca com o nome do paciente
-            await preencherSelectPacientes(paciente.split(' - ')[0]); // Filtra e seleciona corretamente
             document.getElementById('ordPacienteSelect').value = paciente;
             document.getElementById('ordProdutoSelect').value = produto;
 
