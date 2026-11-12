@@ -34,11 +34,12 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            padding: 1rem;
         }
 
         .login-card {
             background: var(--white);
-            padding: 2.5rem 2.5rem;
+            padding: 2.5rem 2rem;
             border-radius: 20px;
             width: 100%;
             max-width: 420px;
@@ -144,6 +145,12 @@
 
         .back-link:hover {
             color: var(--primary);
+        }
+
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 1.8rem 1.2rem;
+            }
         }
     </style>
 </head>
