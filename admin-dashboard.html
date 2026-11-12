@@ -174,41 +174,107 @@
             display: block;
         }
 
+        /* DASHBOARD */
+        .dashboard-header-bar {
+            background: var(--white);
+            padding: 1.2rem 1.8rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+            margin-bottom: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .dashboard-header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .dashboard-header-top h3 {
+            color: var(--primary);
+            font-size: 1.15rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .dashboard-filter-group {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+        }
+
+        .dashboard-filter-group label {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .dashboard-filter-group select, .dashboard-filter-group input {
+            padding: 0.5rem 0.8rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            background-color: var(--bg-light);
+            font-weight: 600;
+            color: var(--primary);
+            font-size: 0.88rem;
+        }
+
+        #blocoDatasPersonalizadas {
+            display: none;
+            align-items: center;
+            gap: 0.6rem;
+            background: #f8fafc;
+            padding: 0.6rem 1rem;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+        }
+
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
             gap: 1.5rem;
             margin-bottom: 2rem;
         }
 
         .stat-card {
             background: var(--white);
-            padding: 1.5rem;
+            padding: 1.6rem;
             border-radius: 16px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.04);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.04);
             border-left: 5px solid var(--accent);
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
         }
 
-        .stat-card.financeiro-card {
-            border-left-color: #f59e0b;
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.07);
         }
 
-        .stat-card.vencido-card {
-            border-left-color: #ef4444;
-        }
-
-        .stat-card.recebido-card {
-            border-left-color: #10b981;
-        }
+        .stat-card.pedidos-card { border-left-color: #3b82f6; }
+        .stat-card.financeiro-card { border-left-color: #f59e0b; }
+        .stat-card.vencido-card { border-left-color: #ef4444; }
+        .stat-card.recebido-card { border-left-color: #10b981; }
 
         .stat-card h4 {
-            font-size: 0.85rem;
+            font-size: 0.82rem;
             color: var(--text-muted);
             margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 700;
         }
 
         .stat-card .number {
-            font-size: 1.7rem;
+            font-size: 1.8rem;
             font-weight: 700;
             color: var(--primary);
         }
@@ -216,20 +282,16 @@
         .stat-card .sub-info {
             font-size: 0.78rem;
             color: var(--text-muted);
-            margin-top: 0.3rem;
+            margin-top: 0.4rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
         }
 
-        .stat-card.financeiro-card .number {
-            color: #b45309;
-        }
-
-        .stat-card.vencido-card .number {
-            color: #b91c1c;
-        }
-
-        .stat-card.recebido-card .number {
-            color: #047857;
-        }
+        .stat-card.pedidos-card .number { color: #1d4ed8; }
+        .stat-card.financeiro-card .number { color: #b45309; }
+        .stat-card.vencido-card .number { color: #b91c1c; }
+        .stat-card.recebido-card .number { color: #047857; }
 
         .management-section {
             background: var(--white);
@@ -386,6 +448,8 @@
         .status-badge.vencido { background-color: #fee2e2; color: #991b1b; }
         .status-badge.entregue { background-color: #e0f2fe; color: #0369a1; }
         .status-badge.ativo { background-color: #d1fae5; color: #065f46; }
+        .status-badge.bloqueado { background-color: #fee2e2; color: #991b1b; }
+        .status-badge.inativo { background-color: #e2e8f0; color: #475569; }
 
         .parcela-tag {
             display: inline-flex;
@@ -573,6 +637,7 @@
                 <button onclick="mudarAba(event, 'aba-contas-receber')">💰 Financeiro</button>
                 <ul class="submenu">
                     <li><button id="btnSubContas" class="active" onclick="mudarAba(event, 'aba-contas-receber')">📥 Contas a Receber</button></li>
+                    <li><button id="btnSubSituacaoClientes" onclick="mudarAba(event, 'aba-situacao-clientes')">🛡️ Situação Clientes</button></li>
                     <li><button id="btnSubHistorico" onclick="mudarAba(event, 'aba-historico-recebidos')">📜 Histórico & Relatórios</button></li>
                 </ul>
             </li>
@@ -589,34 +654,69 @@
             <h2 id="tituloPagina">Visão Geral do Sistema</h2>
             <div style="display: flex; gap: 1rem; align-items: center;">
                 <button class="btn-primary" onclick="bloquearAcessoSuporte(event)" style="background-color: #6c757d; font-size: 0.85rem; padding: 0.4rem 0.8rem;">Área do Paciente (Login/Cadastro)</button>
-                <span style="font-weight: 600; color: var(--text-muted); font-size: 0.9rem;">Painel Master (Supabase)</span>
+                <span style="font-weight: 600; color: var(--text-muted); font-size: 0.9rem;">Painel Master | ADM</span>
             </div>
         </div>
 
         <!-- 1. ABA DASHBOARD -->
         <div id="aba-dashboard" class="tab-content active">
+            
+            <div class="dashboard-header-bar">
+                <div class="dashboard-header-top">
+                    <h3>📈 Resumo Executivo e Indicadores</h3>
+                    <div class="dashboard-filter-group">
+                        <label for="filtroMesDashboard">Período:</label>
+                        <select id="filtroMesDashboard" onchange="tratarMudancaFiltroDashboard()">
+                            <option value="mes_atual" selected>Mês Atual</option>
+                            <option value="personalizado">Personalizado (Datas)</option>
+                            <option value="todos">Todo o Histórico (Geral)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="blocoDatasPersonalizadas">
+                    <span style="font-size: 0.82rem; font-weight: 700; color: var(--text-muted);">De:</span>
+                    <input type="date" id="dashDataIni" onchange="carregarDadosGerais()">
+                    <span style="font-size: 0.82rem; font-weight: 700; color: var(--text-muted);">Até:</span>
+                    <input type="date" id="dashDataFim" onchange="carregarDadosGerais()">
+                </div>
+            </div>
+
             <div class="stats-grid">
+                <div class="stat-card pedidos-card">
+                    <h4>Total de Pedidos</h4>
+                    <div class="number" id="statTotalPedidos">0</div>
+                    <div class="sub-info">📦 Volume de vendas no período</div>
+                </div>
                 <div class="stat-card">
                     <h4>Pacientes Cadastrados</h4>
                     <div class="number" id="statPacientes">0</div>
+                    <div class="sub-info">👥 Base ativa no sistema</div>
                 </div>
                 <div class="stat-card">
                     <h4>Produtos Cadastrados</h4>
                     <div class="number" id="statProdutos">0</div>
+                    <div class="sub-info">🌿 Itens no catálogo</div>
                 </div>
-                <div class="stat-card">
+                <div class="stat-card recebido-card">
                     <h4>Pedidos Pagos</h4>
                     <div class="number" id="statPagos">0</div>
+                    <div class="sub-info">✅ Liquidados no período</div>
                 </div>
                 <div class="stat-card financeiro-card">
                     <h4>Total a Receber (Pendente)</h4>
                     <div class="number" id="statValorAReceber">R$ 0,00</div>
+                    <div class="sub-info">⏳ Aguardando quitação geral</div>
                 </div>
             </div>
             
             <div class="management-section">
-                <h3>Atividade Recente</h3>
-                <p style="color: var(--text-muted); margin-top: 0.8rem; font-size: 0.95rem;">Painel conectado com sucesso ao banco de dados Supabase na nuvem.</p>
+                <div class="section-header">
+                    <h3>🚀 Atividade Recente & Status do Sistema</h3>
+                </div>
+                <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6;">
+                    Painel administrativo conectado em tempo real com a nuvem do Supabase. Os indicadores acima refletem automaticamente o período selecionado para otimizar o seu fechamento financeiro e controle logístico.
+                </p>
             </div>
         </div>
 
@@ -633,7 +733,7 @@
                             <th>Nome Completo</th>
                             <th>CPF</th>
                             <th>Nascimento</th>
-                            <th>Status</th>
+                            <th>Status Cadastral</th>
                             <th>Ações</th>
                         </tr>
                     </thead>
@@ -776,7 +876,47 @@
             </div>
         </div>
 
-        <!-- 6. SUBMÓDULO: HISTÓRICO & RELATÓRIO -->
+        <!-- 6. SUBMÓDULO: SITUAÇÃO CLIENTES -->
+        <div id="aba-situacao-clientes" class="tab-content">
+            <div class="management-section">
+                <div class="section-header">
+                    <h3>🛡️ Monitoramento de Situação e Adimplência de Clientes</h3>
+                    <p style="font-size: 0.88rem; color: var(--text-muted);">Visualização rápida se o paciente está bloqueado por débitos pendentes, ativo ou inativo.</p>
+                </div>
+
+                <div class="filter-bar">
+                    <div class="filter-group" style="grid-column: span 2;">
+                        <label>Buscar Paciente / CPF</label>
+                        <input type="text" id="filtroSitClienteBusca" placeholder="Nome ou CPF..." oninput="renderizarTabelaSituacaoClientes()">
+                    </div>
+                    <div class="filter-group">
+                        <label>Filtrar por Status</label>
+                        <select id="filtroSitClienteStatus" onchange="renderizarTabelaSituacaoClientes()">
+                            <option value="TODOS">Todos os Status</option>
+                            <option value="BLOQUEADO">Bloqueado (Débitos Pendentes)</option>
+                            <option value="ATIVO">Ativo (Em Dia)</option>
+                            <option value="INATIVO">Inativo</option>
+                        </select>
+                    </div>
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Paciente</th>
+                            <th>CPF</th>
+                            <th>Débitos Pendentes</th>
+                            <th>Status Cadastral</th>
+                            <th>Situação Comercial / Acesso</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelaSituacaoClientes"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 7. SUBMÓDULO: HISTÓRICO & RELATÓRIO -->
         <div id="aba-historico-recebidos" class="tab-content">
             <div class="stats-grid">
                 <div class="stat-card recebido-card">
@@ -866,7 +1006,7 @@
 
     </div>
 
-    <!-- Modal Gerenciamento de Parcelas (Dar baixa individual ou múltipla) -->
+    <!-- Modal Gerenciamento de Parcelas -->
     <div id="modalParcelasLista" class="modal">
         <div class="modal-content" style="max-width: 700px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
@@ -925,7 +1065,7 @@
         </div>
     </div>
 
-    <!-- Modal Paciente -->
+    <!-- Modal Paciente (Com campo de Status Editável) -->
     <div id="modalPaciente" class="modal">
         <div class="modal-content">
             <h3 id="tituloModalPaciente">Cadastrar Novo Paciente</h3>
@@ -941,6 +1081,13 @@
             <div class="form-group">
                 <label>Data de Nascimento</label>
                 <input type="date" id="pNasc" required>
+            </div>
+            <div class="form-group">
+                <label>Status Cadastral</label>
+                <select id="pStatus">
+                    <option value="Ativo">Ativo</option>
+                    <option value="Inativo">Inativo</option>
+                </select>
             </div>
             <div class="modal-actions">
                 <button class="btn-primary" style="flex:1;" onclick="salvarPaciente()">Salvar</button>
@@ -1085,7 +1232,6 @@
             const valorTotal = Number(ord.valor_total) || 0;
             const matchParcela = forma.match(/(\d+)x\s*de\s*R\$\s*([\d.,]+)/i);
 
-            // Tenta resgatar parcelas pagas salvas no campo forma_pagamento ou metadata
             let parcelasPagas = ord.parcelas_pagas || [];
 
             if (matchParcela) {
@@ -1093,7 +1239,6 @@
                 const valorParcelaStr = matchParcela[2];
                 const valorParcelaNum = parseFloat(valorParcelaStr.replace(/\./g, '').replace(',', '.')) || (valorTotal / qtd);
                 
-                // Se o pedido estiver como 'Pago' global mas não tinha array, assume todas pagas
                 if (ord.status_pagamento === 'Pago' && (!parcelasPagas || parcelasPagas.length === 0)) {
                     parcelasPagas = Array.from({length: qtd}, (_, i) => i + 1);
                 }
@@ -1128,10 +1273,17 @@
 
             if(idAba === 'aba-contas-receber') {
                 document.getElementById('btnSubContas').classList.add('active');
+                document.getElementById('btnSubSituacaoClientes').classList.remove('active');
                 document.getElementById('btnSubHistorico').classList.remove('active');
+            } else if(idAba === 'aba-situacao-clientes') {
+                document.getElementById('btnSubSituacaoClientes').classList.add('active');
+                document.getElementById('btnSubContas').classList.remove('active');
+                document.getElementById('btnSubHistorico').classList.remove('active');
+                renderizarTabelaSituacaoClientes();
             } else if(idAba === 'aba-historico-recebidos') {
                 document.getElementById('btnSubHistorico').classList.add('active');
                 document.getElementById('btnSubContas').classList.remove('active');
+                document.getElementById('btnSubSituacaoClientes').classList.remove('active');
             }
 
             const titulos = {
@@ -1140,6 +1292,7 @@
                 'aba-produtos': 'Catálogo de Produtos',
                 'aba-pedidos': 'Gerenciamento de Pedidos',
                 'aba-contas-receber': 'Controle Financeiro: Contas a Receber',
+                'aba-situacao-clientes': 'Controle Financeiro: Situação de Clientes',
                 'aba-historico-recebidos': 'Controle Financeiro: Histórico & Relatórios'
             };
             document.getElementById('tituloPagina').innerText = titulos[idAba];
@@ -1155,6 +1308,28 @@
             await carregarPacientes();
             await carregarProdutos();
             await carregarPedidos();
+            if (document.getElementById('aba-situacao-clientes').classList.contains('active')) {
+                renderizarTabelaSituacaoClientes();
+            }
+        }
+
+        function tratarMudancaFiltroDashboard() {
+            const tipoFiltro = document.getElementById('filtroMesDashboard').value;
+            const blocoDatas = document.getElementById('blocoDatasPersonalizadas');
+
+            if (tipoFiltro === 'personalizado') {
+                blocoDatas.style.display = 'flex';
+                if (!document.getElementById('dashDataIni').value) {
+                    const hoje = new Date();
+                    const primeiroDia = new Date(hoje.getFullYear(), hoje.getMonth(), 1).toISOString().split('T')[0];
+                    const ultimoDia = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0).toISOString().split('T')[0];
+                    document.getElementById('dashDataIni').value = primeiroDia;
+                    document.getElementById('dashDataFim').value = ultimoDia;
+                }
+            } else {
+                blocoDatas.style.display = 'none';
+            }
+            carregarDadosGerais();
         }
 
         async function carregarPacientes() {
@@ -1166,14 +1341,17 @@
             tbody.innerHTML = '';
             listaPacientesCache.forEach(p => {
                 const nascFmt = formatarDataBR(p.data_nascimento);
+                const statusCadastral = p.status || 'Ativo';
+                const badgeClass = statusCadastral === 'Ativo' ? 'ativo' : 'inativo';
+
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td>${p.nome_completo}</td>
                     <td>${p.cpf}</td>
                     <td>${nascFmt}</td>
-                    <td><span class="status-badge ativo">${p.status}</span></td>
+                    <td><span class="status-badge ${badgeClass}">${statusCadastral}</span></td>
                     <td class="action-btns">
-                        <button onclick="editarPaciente('${p.id}', '${p.nome_completo}', '${p.cpf}', '${p.data_nascimento}')">Editar</button>
+                        <button onclick="editarPaciente('${p.id}', '${p.nome_completo}', '${p.cpf}', '${p.data_nascimento}', '${statusCadastral}')">Editar</button>
                         <button class="delete" onclick="deletarPaciente('${p.id}')">Excluir</button>
                     </td>
                 `;
@@ -1220,8 +1398,13 @@
             let totalPagosCount = 0;
             let qtdAbertas = 0;
             let qtdVencidas = 0;
+            let totalPedidosFiltrados = 0;
 
             const hojeISO = new Date().toISOString().split('T')[0];
+            const mesAtualPrefixo = hojeISO.substring(0, 7);
+            const tipoFiltroDash = document.getElementById('filtroMesDashboard').value;
+            const dataIniCustom = document.getElementById('dashDataIni').value;
+            const dataFimCustom = document.getElementById('dashDataFim').value;
 
             listaPedidosCache.forEach(ord => {
                 const dataEnvioFmt = formatarDataBR(ord.data_envio);
@@ -1248,6 +1431,24 @@
                 const valorNum = Number(ord.valor_total) || 0;
                 const infoParc = extrairDetalhesParcelamento(ord);
 
+                const dataPedidoRef = ord.data_envio || (ord.created_at ? ord.created_at.split('T')[0] : '');
+                let pertenceAoPeriodo = true;
+
+                if (tipoFiltroDash === 'mes_atual') {
+                    pertenceAoPeriodo = dataPedidoRef && dataPedidoRef.startsWith(mesAtualPrefixo);
+                } else if (tipoFiltroDash === 'personalizado') {
+                    if (dataIniCustom && dataPedidoRef < dataIniCustom) pertenceAoPeriodo = false;
+                    if (dataFimCustom && dataPedidoRef > dataFimCustom) pertenceAoPeriodo = false;
+                }
+
+                if (pertenceAoPeriodo) {
+                    totalPedidosFiltrados++;
+                    if (ord.status_pagamento === 'Pago') {
+                        totalRecebido += valorNum;
+                        totalPagosCount++;
+                    }
+                }
+
                 if (ord.status_pagamento === 'Pendente') {
                     totalAReceber += valorNum;
                     qtdAbertas++;
@@ -1259,12 +1460,10 @@
                     if (infoParc.parcelado) {
                         totalParceladoPendente += valorNum;
                     }
-                } else if (ord.status_pagamento === 'Pago') {
-                    totalRecebido += valorNum;
-                    totalPagosCount++;
                 }
             });
 
+            document.getElementById('statTotalPedidos').innerText = totalPedidosFiltrados;
             document.getElementById('statPagos').innerText = totalPagosCount;
             document.getElementById('statValorAReceber').innerText = formatarMoeda(totalAReceber);
 
@@ -1283,6 +1482,69 @@
 
             aplicarFiltrosContasReceber();
             aplicarFiltrosHistorico();
+        }
+
+        // ==========================================
+        // RENDERIZAR SUBMÓDULO: SITUAÇÃO CLIENTES
+        // ==========================================
+        function renderizarTabelaSituacaoClientes() {
+            const busca = (document.getElementById('filtroSitClienteBusca').value || '').toLowerCase().trim();
+            const statusFiltro = document.getElementById('filtroSitClienteStatus').value;
+            const tbody = document.getElementById('tabelaSituacaoClientes');
+            tbody.innerHTML = '';
+
+            let contadorExibidos = 0;
+
+            listaPacientesCache.forEach(paciente => {
+                const nomeCompletoStr = paciente.nome_completo;
+                const cpfStr = paciente.cpf;
+                const statusCadastral = paciente.status || 'Ativo';
+
+                // Verifica se tem pedidos pendentes (débitos) no cache de pedidos
+                const pedidosDoPaciente = listaPedidosCache.filter(o => o.paciente_nome.includes(nomeCompletoStr));
+                const temDebitoPendente = pedidosDoPaciente.some(o => o.status_pagamento === 'Pendente');
+
+                // Determina a situação comercial do cliente
+                let situacaoComercial = 'ATIVO';
+                let badgeHtml = '';
+
+                if (statusCadastral === 'Inativo') {
+                    situacaoComercial = 'INATIVO';
+                    badgeHtml = `<span class="status-badge inativo">⚪ Inativo</span>`;
+                } else if (temDebitoPendente) {
+                    situacaoComercial = 'BLOQUEADO';
+                    badgeHtml = `<span class="status-badge bloqueado">🔒 Bloqueado (Débitos)</span>`;
+                } else {
+                    situacaoComercial = 'ATIVO';
+                    badgeHtml = `<span class="status-badge ativo">✅ Ativo (Em Dia)</span>`;
+                }
+
+                // Aplica filtros de busca e status
+                if (busca && !nomeCompletoStr.toLowerCase().includes(busca) && !cpfStr.includes(busca)) {
+                    return;
+                }
+                if (statusFiltro !== 'TODOS' && statusFiltro !== situacaoComercial) {
+                    return;
+                }
+
+                contadorExibidos++;
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${nomeCompletoStr}</strong></td>
+                    <td>${cpfStr}</td>
+                    <td>${temDebitoPendente ? '<span style="color: var(--danger); font-weight: 700;">Sim (Possui Pendências)</span>' : '<span style="color: var(--success); font-weight: 650;">Nenhum débito</span>'}</td>
+                    <td><span class="status-badge ${statusCadastral === 'Ativo' ? 'ativo' : 'inativo'}">${statusCadastral}</span></td>
+                    <td>${badgeHtml}</td>
+                    <td class="action-btns">
+                        <button onclick="editarPaciente('${paciente.id}', '${nomeCompletoStr}', '${cpfStr}', '${paciente.data_nascimento}', '${statusCadastral}')">Alterar Status</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            if (contadorExibidos === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 1.5rem;">Nenhum paciente encontrado com os filtros selecionados.</td></tr>`;
+            }
         }
 
         function aplicarFiltrosContasReceber() {
@@ -1470,9 +1732,6 @@
             carregarDadosGerais();
         }
 
-        // ==========================================
-        // GERENCIAMENTO INTERATIVO DE PARCELAS INDIVIDUAIS
-        // ==========================================
         function verListaParcelas(idPedido) {
             const ord = listaPedidosCache.find(p => String(p.id) === String(idPedido));
             if (!ord) return;
@@ -1535,7 +1794,6 @@
             const ord = listaPedidosCache.find(p => String(p.id) === String(pedidoAtualIdEmEdicao));
             const infoParc = extrairDetalhesParcelamento(ord);
 
-            // Verifica se todas foram quitadas ou apenas algumas
             const todasQuitadas = parcelasSelecionadas.length >= infoParc.qtdParcelas;
             const novoStatusPagamento = todasQuitadas ? 'Pago' : 'Pendente';
             const hojeISO = new Date().toISOString().split('T')[0];
@@ -1649,15 +1907,17 @@
             document.getElementById('pNome').value = '';
             document.getElementById('pCpf').value = '';
             document.getElementById('pNasc').value = '';
+            document.getElementById('pStatus').value = 'Ativo';
             document.getElementById('modalPaciente').style.display = 'flex';
         }
 
-        function editarPaciente(id, nome, cpf, nasc) {
-            document.getElementById('tituloModalPaciente').innerText = 'Editar Paciente';
+        function editarPaciente(id, nome, cpf, nasc, statusCadastral) {
+            document.getElementById('tituloModalPaciente').innerText = 'Editar Paciente & Status';
             document.getElementById('pId').value = id;
             document.getElementById('pNome').value = nome;
             document.getElementById('pCpf').value = cpf;
             document.getElementById('pNasc').value = nasc;
+            document.getElementById('pStatus').value = statusCadastral || 'Ativo';
             document.getElementById('modalPaciente').style.display = 'flex';
         }
 
@@ -1666,6 +1926,7 @@
             const nome = document.getElementById('pNome').value.trim();
             const cpfInput = document.getElementById('pCpf').value.replace(/\D/g, '');
             const nascimento = document.getElementById('pNasc').value;
+            const statusCadastral = document.getElementById('pStatus').value;
 
             if(!nome || !cpfInput || !nascimento) { alert('Preencha todos os campos!'); return; }
             if(cpfInput.length !== 11) { alert('CPF inválido!'); return; }
@@ -1673,10 +1934,10 @@
             const cpfFormatado = cpfInput.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
 
             if (id) {
-                const { error } = await supabaseClient.from('pacientes').update({ nome_completo: nome, cpf: cpfFormatado, data_nascimento: nascimento }).eq('id', id);
+                const { error } = await supabaseClient.from('pacientes').update({ nome_completo: nome, cpf: cpfFormatado, data_nascimento: nascimento, status: statusCadastral }).eq('id', id);
                 if (error) { alert('Erro ao atualizar: ' + error.message); return; }
             } else {
-                const { error } = await supabaseClient.from('pacientes').insert([{ nome_completo: nome, cpf: cpfFormatado, data_nascimento: nascimento, status: 'Ativo' }]);
+                const { error } = await supabaseClient.from('pacientes').insert([{ nome_completo: nome, cpf: cpfFormatado, data_nascimento: nascimento, status: statusCadastral }]);
                 if (error) { alert('Erro ao cadastrar (CPF já existe?): ' + error.message); return; }
             }
 
@@ -1762,8 +2023,13 @@
                 opt.value = nomeCompleto;
                 
                 const temDebito = await pacienteTemDebitoPendente(nomeCompleto);
-                if (temDebito) {
-                    opt.innerText = `${p.nome_completo} - ${p.cpf} (⚠️ Débito em Aberto)`;
+                const estaInativo = p.status === 'Inativo';
+
+                if (estaInativo) {
+                    opt.innerText = `${p.nome_completo} - ${p.cpf} (⚪ Inativo)`;
+                    opt.style.color = '#64748b';
+                } else if (temDebito) {
+                    opt.innerText = `${p.nome_completo} - ${p.cpf} (🔒 Bloqueado - Débito)`;
                     opt.style.color = '#991b1b';
                 } else {
                     opt.innerText = `${p.nome_completo} - ${p.cpf}`;
@@ -1820,7 +2086,6 @@
             document.getElementById('ordParcelas').value = '1';
             document.getElementById('ordValorTotal').value = '';
             
-            // Define a data atual como padrão no campo de pagamento / vencimento ao abrir novo pedido
             const hojeISO = new Date().toISOString().split('T')[0];
             document.getElementById('ordDataEnvio').value = hojeISO;
             document.getElementById('ordDataPagto').value = hojeISO;
@@ -1889,8 +2154,16 @@
 
             if(!paciente || !produtoSelecionadoStr) { alert('Selecione paciente e produto!'); return; }
 
+            const nomeBuscaPacientePuro = paciente.split(' (')[0].trim();
+            const objPacienteCadastrado = listaPacientesCache.find(p => p.nome_completo === nomeBuscaPacientePuro);
+
+            if (objPacienteCadastrado && objPacienteCadastrado.status === 'Inativo') {
+                alert('❌ OPERAÇÃO BLOQUEADA: Este paciente está com o cadastro INATIVO.');
+                return;
+            }
+
             if (!id && (await pacienteTemDebitoPendente(paciente))) {
-                alert('❌ OPERAÇÃO BLOQUEADA: Este paciente possui contas em aberto. Regularize antes de criar um novo pedido.');
+                alert('❌ OPERAÇÃO BLOQUEADA: Este paciente possui contas em aberto (Bloqueado). Regularize antes de criar um novo pedido.');
                 return;
             }
 
