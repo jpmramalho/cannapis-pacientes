@@ -403,7 +403,10 @@
         
         <div class="top-header">
             <h2 id="tituloPagina">Visão Geral do Sistema</h2>
-            <span style="font-weight: 600; color: var(--text-muted); font-size: 0.9rem;">Painel Master (Supabase)</span>
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                <button class="btn-primary" onclick="bloquearAcessoSuporte(event)" style="background-color: #6c757d; font-size: 0.85rem; padding: 0.4rem 0.8rem;">Área do Paciente (Login/Cadastro)</button>
+                <span style="font-weight: 600; color: var(--text-muted); font-size: 0.9rem;">Painel Master (Supabase)</span>
+            </div>
         </div>
 
         <!-- 1. ABA DASHBOARD -->
@@ -742,6 +745,14 @@
             };
             document.getElementById('tituloPagina').innerText = titulos[idAba];
             carregarDadosGerais();
+        }
+
+        // ==========================================
+        // BLOQUEIO TEMPORÁRIO DE CADASTRO/LOGIN DE PACIENTES
+        // ==========================================
+        function bloquearAcessoSuporte(event) {
+            if (event) event.preventDefault();
+            alert("Cadastros e acessos temporariamente indisponíveis. Por favor, faça contato com o suporte.");
         }
 
         // ==========================================
@@ -1143,7 +1154,6 @@
                 return;
             }
 
-            // Descobrir qual produto foi escolhido para dar baixa no estoque (apenas ao criar novo pedido)
             const nomeProdutoPuro = produtoSelecionadoStr.split(' - R$')[0].trim();
             const produtoObj = listaProdutosCache.find(p => p.nome === nomeProdutoPuro);
 
@@ -1152,7 +1162,6 @@
                     alert('❌ ESTOQUE ESGOTADO: Este produto não possui unidades disponíveis em estoque.');
                     return;
                 }
-                // Diminui 1 unidade do estoque
                 const novoEstoque = (produtoObj.quantidade ?? 0) - 1;
                 await supabaseClient.from('produtos').update({ quantidade: novoEstoque }).eq('id', produtoObj.id);
             }
